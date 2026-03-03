@@ -12,10 +12,10 @@ $AIClient:=cs.AIKit.OpenAI.new()
 
 $AIClient.baseURL:="http://127.0.0.1:8080/v1"  
 
-$en:=$AIClient.embeddings.create("How do I reset my password?").embedding.embedding
-$fr:=$AIClient.embeddings.create("Comment réinitialiser mon mot de passe?").embedding.embedding
+$fr:=$AIClient.embeddings.create("query: Comment réinitialiser mon mot de passe?").embedding.embedding
+$en:=$AIClient.embeddings.create("passage: To reset your password you must contanct customer support.").embedding.embedding
 
-$cosineSimilarity:=$en.cosineSimilarity($fr)
+$cosineSimilarity:=$fr.cosineSimilarity($en)
 
 ALERT([$cosineSimilarity].join())
 ```
@@ -24,4 +24,4 @@ ALERT([$cosineSimilarity].join())
 
 |llama.cpp `Q8_0`|ONNX Runtime `Int8`|CTranslate2 `Int8`
 |-|-|-|
-|`0.8737083041335`|`0.8721361305521`|`0.8926017500907`
+|`0.8202557874795`|`0.821655338421`|`0.836891039498`
