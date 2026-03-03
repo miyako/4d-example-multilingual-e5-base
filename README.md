@@ -1,2 +1,5 @@
-# 4d-example-multilingual-e5-base
-Multilingual E5 in GGUF, ONNX, CT2
+## [intfloat/multilingual-e5-base](https://huggingface.co/intfloat/multilingual-e5-base)
+
+|`max_position_embeddings`|`hidden_size`|`num_hidden_layers`
+|-:|-:|-:|
+|``|``|``
