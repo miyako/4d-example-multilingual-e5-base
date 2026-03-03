@@ -1,5 +1,7 @@
 ## [intfloat/multilingual-e5-base](https://huggingface.co/intfloat/multilingual-e5-base)
 
+E5 is text embedding model released by Microsoft in 2023. It was explicitly trained to measure the distance between a query and a passage to perform asymmetric tasks.
+
 |`max_position_embeddings`|`hidden_size`|`num_hidden_layers`
 |-:|-:|-:|
 |`512`|`768`|`12`
