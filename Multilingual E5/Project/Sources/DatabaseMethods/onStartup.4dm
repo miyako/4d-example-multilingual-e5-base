@@ -38,16 +38,35 @@ use Q8_0 quantisation
 */
 
 $homeFolder:=Folder:C1567(fk home folder:K87:24).folder(".GGUF")
-$port:=8080
-$options:={\
-embeddings: True:C214; \
-pooling: "mean"; \
-log_disable: True:C214; \
-fit: "on"}
 
 $folder:=$homeFolder.folder("multilingual-e5-base")
 $path:="multilingual-e5-base-Q8_0.gguf"
 $URL:="keisuke-miyako/multilingual-e5-base-gguf-q8_0"
+
+var $logFile : 4D:C1709.File
+$logFile:=$folder.file("llama.log")
+$folder.create()
+If (Not:C34($logFile.exists))
+	$logFile.setContent(4D:C1709.Blob.new())
+End if 
+var $threads; $max_position_embeddings; $batch_size : Integer
+$threads:=System info:C1571.cpuThreads
+$max_position_embeddings:=8194
+$batch_size:=512  //could go up to max_position_embeddings
+
+$port:=8080
+$options:={\
+embeddings: True:C214; \
+pooling: "mean"; \
+log_file: $logFile; \
+ctx_size: $batch_size*$threads; \
+batch_size: $batch_size; \
+parallel: $threads; \
+threads: $threads; \
+threads_batch: $threads; \
+threads_http: $threads; \
+log_disable: False:C215; \
+n_gpu_layers: 0}
 
 $huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path)
 $huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])

@@ -10,7 +10,7 @@ $fr:=$AIClient.embeddings.create("query: Comment réinitialiser mon mot de passe
 $en:=$AIClient.embeddings.create("passage: To reset your password you must contanct customer support.").embedding.embedding
 
 $cosineSimilarity:=$fr.cosineSimilarity($en)
-//0.836891039498
+//0.83689103949804
 
 ALERT:C41([$cosineSimilarity].join())
 
