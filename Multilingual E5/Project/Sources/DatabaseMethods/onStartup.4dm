@@ -50,8 +50,8 @@ If (Not:C34($logFile.exists))
 	$logFile.setContent(4D:C1709.Blob.new())
 End if 
 var $threads; $max_position_embeddings; $batch_size : Integer
-$threads:=System info:C1571.cpuThreads
-$max_position_embeddings:=8194
+$threads:=System info:C1571.cpuThreads\2
+$max_position_embeddings:=8192
 $batch_size:=512  //could go up to max_position_embeddings
 
 $port:=8080
@@ -70,7 +70,6 @@ n_gpu_layers: 0}
 
 $huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path)
 $huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
-
 
 $llama:=cs:C1710.llama.llama.new($port; $huggingfaces; $homeFolder; $options; $event)
 
