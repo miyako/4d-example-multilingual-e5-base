@@ -2,9 +2,9 @@
 
 E5 is text embedding model released by Microsoft in 2023. It was explicitly trained to measure the distance between a query and a passage to perform asymmetric tasks.
 
-|`max_position_embeddings`|`hidden_size`|`num_hidden_layers`
-|-:|-:|-:|
-|`512`|`768`|`12`
+|`max_position_embeddings`|`hidden_size`|`num_hidden_layers`|`pooling`
+|-:|-:|-:|-:|
+|`512`|`768`|`12`|`mean`
 
 ```4d
 var $en; $fr : 4D.Vector
