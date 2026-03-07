@@ -6,10 +6,12 @@ $AIClient:=cs:C1710.AIKit.OpenAI.new()
 
 $AIClient.baseURL:="http://127.0.0.1:8080/v1"  // llama-server
 
-$fr:=$AIClient.embeddings.create("query: Comment réinitialiser mon mot de passe?").embedding.embedding
-$en:=$AIClient.embeddings.create("passage: To reset your password you must contanct customer support.").embedding.embedding
+$batch:=$AIClient.embeddings.create(["query: Comment réinitialiser mon mot de passe?"; "passage: To reset your password you must contanct customer support."])
+
+$fr:=$batch.embeddings[0].embedding
+$en:=$batch.embeddings[1].embedding
 
 $cosineSimilarity:=$fr.cosineSimilarity($en)
-//0.81991303476747
+//0.82024509588775
 
 ALERT:C41([$cosineSimilarity].join())
