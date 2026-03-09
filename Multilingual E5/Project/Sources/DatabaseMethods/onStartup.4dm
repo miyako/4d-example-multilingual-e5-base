@@ -95,7 +95,7 @@ $URL:="keisuke-miyako/multilingual-e5-base-onnx-int8"
 $huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path; "embedding"; ($URL="@-f16" || ($URL="@-f32")) ? "model.onnx" : "model_quantized.onnx")
 $huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
 
-$ONNX:=cs:C1710.ONNX.ONNX.new($port; $huggingfaces; $homeFolder; $options; $event)
+//$ONNX:=cs.ONNX.ONNX.new($port; $huggingfaces; $homeFolder; $options; $event)
 
 
 /*
@@ -117,4 +117,4 @@ $URL:="keisuke-miyako/multilingual-e5-base-ct2-int8"
 $huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path; "embedding")
 $huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
 
-$CTranslate2:=cs:C1710.CTranslate2.CTranslate2.new($port; $huggingfaces; $homeFolder; $options; $event)
+//$CTranslate2:=cs.CTranslate2.CTranslate2.new($port; $huggingfaces; $homeFolder; $options; $event)

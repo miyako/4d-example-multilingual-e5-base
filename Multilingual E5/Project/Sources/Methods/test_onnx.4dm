@@ -12,6 +12,6 @@ $fr:=$batch.embeddings[0].embedding
 $en:=$batch.embeddings[1].embedding
 
 $cosineSimilarity:=$fr.cosineSimilarity($en)
-//0.82165533842103
+//0.81161414026977
 
 ALERT:C41([$cosineSimilarity].join())
