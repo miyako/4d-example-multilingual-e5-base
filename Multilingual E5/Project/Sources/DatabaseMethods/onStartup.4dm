@@ -63,7 +63,7 @@ embeddings: True:C214; \
 pooling: "mean"; \
 log_file: $logFile; \
 ctx_size: $batch_size*$batches*$threads; \
-batch_size: $batch_size+$batches; \
+batch_size: $batch_size*$batches; \
 parallel: $cores; \
 threads: $threads; \
 threads_batch: $threads; \
