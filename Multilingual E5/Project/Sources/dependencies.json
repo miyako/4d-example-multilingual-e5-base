@@ -19,6 +19,14 @@
 		"4D AIKit": {
 			"github": "4d/4D-AIKit",
 			"version": "4d"
+		},
+		"workers": {
+			"github": "miyako/workers",
+			"version": "latest"
+		},
+		"tcp": {
+			"github": "miyako/tcp",
+			"version": "latest"
 		}
 	}
 }
