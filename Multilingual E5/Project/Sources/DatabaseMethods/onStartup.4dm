@@ -1,47 +1,50 @@
-/*
-
-llama-server settings
-
-*/
-
 var $llama : cs:C1710.llama.llama
+
 var $homeFolder : 4D:C1709.Folder
+$homeFolder:=Folder:C1567(fk home folder:K87:24).folder(".GGUF")
+var $file : 4D:C1709.File
+var $URL : Text
+var $port : Integer
 var $huggingface : cs:C1710.event.huggingface
-
-/*
-
-callbacks for downloader (alert on error)
-
-*/
 
 var $event : cs:C1710.event.event
 $event:=cs:C1710.event.event.new()
-$event.onError:=Formula:C1597(ALERT:C41($2.message))
-//$event.onSuccess:=Formula(ALERT($2.models.extract("name").join(",")+" loaded!"))
+
+$event.onError:=Formula:C1597(OnModelDownloaded)
+$event.onSuccess:=Formula:C1597(OnModelDownloaded)
+
 $event.onData:=Formula:C1597(LOG EVENT:C667(Into 4D debug message:K38:5; This:C1470.file.fullName+":"+String:C10((This:C1470.range.end/This:C1470.range.length)*100; "###.00%")))
+//$event.onData:=Formula(MESSAGE(This.file.fullName+":"+String((This.range.end/This.range.length)*100; "###.00%")))
 $event.onResponse:=Formula:C1597(LOG EVENT:C667(Into 4D debug message:K38:5; This:C1470.file.fullName+":download complete"))
+//$event.onResponse:=Formula(MESSAGE(This.file.fullName+":download complete"))
 $event.onTerminate:=Formula:C1597(LOG EVENT:C667(Into 4D debug message:K38:5; (["process"; $1.pid; "terminated!"].join(" "))))
 
-var $options : Object
-var $huggingfaces : cs:C1710.event.huggingfaces
+$port:=8080
+
 var $folder : 4D:C1709.Folder
-var $path : Text
-var $URL : Text
-var $pooling : Text
-
-/*
-
-model settings (llama.cpp)
-
-use Q8_0 quantisation
-
-*/
-
-$homeFolder:=Folder:C1567(fk home folder:K87:24).folder(".GGUF")
+var $path; $mmproj; $cache_type_k; $cache_type_v : Text
+var $n_gpu_layers; $threads; $batches; $ubatch_size; $batch_size; $max_position_embeddings : Integer
 
 $folder:=$homeFolder.folder("multilingual-e5-base")
 $path:="multilingual-e5-base-Q8_0.gguf"
 $URL:="keisuke-miyako/multilingual-e5-base-gguf-q8_0"
+
+/*
+
+Multilingual E5の場合
+encoder-onlyなので
+Apple Siliconに_レイヤーを乗せることができます。
+
+*/
+
+$cache_type_k:="f16"
+$cache_type_v:="f16"
+$n_gpu_layers:=99
+$threads:=6
+$batches:=1
+$ubatch_size:=512
+$batch_size:=512
+$max_position_embeddings:=512
 
 var $logFile : 4D:C1709.File
 $logFile:=$folder.file("llama.log")
@@ -49,72 +52,26 @@ $folder.create()
 If (Not:C34($logFile.exists))
 	$logFile.setContent(4D:C1709.Blob.new())
 End if 
-var $cores; $max_position_embeddings; $batch_size; $parallel; $threads; $batches : Integer
-$cores:=System info:C1571.cores\2
-$max_position_embeddings:=512
-$batch_size:=512
-$batches:=32
-$threads:=2
 
-var $port : Integer
-$port:=8080
+var $options : Object
+
 $options:={\
 embeddings: True:C214; \
 pooling: "mean"; \
-log_file: $logFile; \
-ctx_size: $batch_size*$batches*$threads; \
-batch_size: $batch_size*$batches; \
-parallel: $cores; \
+ctx_size: $max_position_embeddings*$batches; \
+batch_size: $batch_size; \
+ubatch_size: $ubatch_size; \
+parallel: $batches; \
 threads: $threads; \
 threads_batch: $threads; \
-threads_http: $threads; \
+threads_http: 2; \
+n_gpu_layers: $n_gpu_layers; \
 log_disable: False:C215; \
-n_gpu_layers: -1}
+log_file: $logFile; verbose: False:C215}
 
-$huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path)
+var $huggingfaces : cs:C1710.event.huggingfaces
+
+$huggingface:=cs:C1710.event.huggingface.new($folder; $URL; [$path])
 $huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
 
 $llama:=cs:C1710.llama.llama.new($port; $huggingfaces; $homeFolder; $options; $event)
-
-/*
-
-ONNX Runtime: 
-
-use int8 quantisation
-
-*/
-
-$homeFolder:=Folder:C1567(fk home folder:K87:24).folder(".ONNX")
-$port:=8081
-$options:={pooling: "mean"}
-
-$folder:=$homeFolder.folder("multilingual-e5-base")
-$path:="multilingual-e5-base-onnx-int8"
-$URL:="keisuke-miyako/multilingual-e5-base-onnx-int8"
-
-$huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path; "embedding"; ($URL="@-f16" || ($URL="@-f32")) ? "model.onnx" : "model_quantized.onnx")
-$huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
-
-$ONNX:=cs:C1710.ONNX.ONNX.new($port; $huggingfaces; $homeFolder; $options; $event)
-
-
-/*
-
-CTranslate2: 
-
-use int8 quantisation
-
-*/
-
-$homeFolder:=Folder:C1567(fk home folder:K87:24).folder(".CTranslate2")
-$port:=8082
-$options:={pooling: "mean"}
-
-$folder:=$homeFolder.folder("multilingual-e5-base")
-$path:="multilingual-e5-base-ct2-int8"
-$URL:="keisuke-miyako/multilingual-e5-base-ct2-int8"
-
-$huggingface:=cs:C1710.event.huggingface.new($folder; $URL; $path; "embedding")
-$huggingfaces:=cs:C1710.event.huggingfaces.new([$huggingface])
-
-$CTranslate2:=cs:C1710.CTranslate2.CTranslate2.new($port; $huggingfaces; $homeFolder; $options; $event)

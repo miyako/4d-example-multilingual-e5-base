@@ -1,19 +1,11 @@
 {
 	"dependencies": {
-		"onnx genai": {
-			"github": "miyako/onnx-genai",
-			"version": "latest"
-		},
 		"llama cpp": {
 			"github": "miyako/llama-cpp",
 			"version": "latest"
 		},
 		"event": {
 			"github": "miyako/event",
-			"version": "latest"
-		},
-		"ctranslate2": {
-			"github": "miyako/ctranslate2",
 			"version": "latest"
 		},
 		"4D AIKit": {
