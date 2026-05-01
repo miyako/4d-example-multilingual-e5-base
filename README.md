@@ -7,23 +7,22 @@ E5 is a text embedding model released by Microsoft in 2023. It was explicitly tr
 |`512`|`768`|`12`|`mean`
 
 ```4d
-var $en; $fr : 4D.Vector
 var $AIClient : cs.AIKit.OpenAI
-var $cosineSimilarity : Real
 $AIClient:=cs.AIKit.OpenAI.new()
 
-$AIClient.baseURL:="http://127.0.0.1:8080/v1"  
+$AIClient.baseURL:="http://127.0.0.1:8080/v1"  // llama-server
 
-$fr:=$AIClient.embeddings.create("query: Comment réinitialiser mon mot de passe?").embedding.embedding
-$en:=$AIClient.embeddings.create("passage: To reset your password you must contanct customer support.").embedding.embedding
+$query:="query: 4D Serverが使用するTCPポート番号を教えて?"
 
-$cosineSimilarity:=$fr.cosineSimilarity($en)
+var $batch : cs.AIKit.OpenAIEmbeddingsResult
+$batch:=$AIClient.embeddings.create($query)
 
-ALERT([$cosineSimilarity].join())
+If ($batch.success)
+	$vector:=$batch.embedding.embedding
+	var $comparison:={vector: $vector; metric: mk cosine; threshold: 0.85}
+	var $results:=ds.Documents.query("Embeddings > :1"; $comparison)
+	If ($results.length#0)
+		ALERT($results.first().Text)
+	End if 
+End if 
 ```
-
-##### Cosine similarity from example code above:
-
-|llama.cpp `Q8_0`|ONNX Runtime `Int8`|CTranslate2 `Int8`
-|-|-|-|
-|`0.82024509588775`|`0.81161414110024`|`0.8220397134428`
